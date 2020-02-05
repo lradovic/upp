@@ -35,6 +35,8 @@ public class CuvanjeService implements JavaDelegate{
 	      user = userRepository.findByUsername(username);
 	      
 	      user.setAktiviran(true);
+	      user.setRole("recenzent");
+	      
 	      
 	      userRepository.save(user);
 	}

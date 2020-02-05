@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import root.demo.model.FormFieldsDto;
+import root.demo.model.FormMultiple;
 import root.demo.model.FormSubmissionDto;
 import root.demo.model.TaskDto;
 import root.demo.repository.CasopisRepository;
@@ -57,11 +58,14 @@ public class CasopisController {
 	@Autowired
 	private CasopisRepository casopisRepository;
 	
-	@GetMapping(path = "/get", produces = "application/json")
-    public @ResponseBody FormFieldsDto get() {
+	@GetMapping(path = "/get/{user}", produces = "application/json")
+    public @ResponseBody FormFieldsDto getPocni(@PathVariable String user) {
 		//provera da li korisnik sa id-jem pera postoji
 		//List<User> users = identityService.createUserQuery().userId("pera").list();
 		ProcessInstance pi = runtimeService.startProcessInstanceByKey("KreiranjeMagazina");
+		
+		runtimeService.setVariable(pi.getId(), "initiator", user);
+
 
 		Task task = taskService.createTaskQuery().processInstanceId(pi.getId()).list().get(0);
 		
@@ -165,9 +169,10 @@ public class CasopisController {
     }
 	
 	@PostMapping(path = "/dodajOblast/{taskId}", produces = "application/json")
-    public @ResponseBody ResponseEntity dodajOblast(@RequestBody List<FormSubmissionDto> dto, @PathVariable String taskId) {
-		HashMap<String, Object> map = this.mapListToDto(dto);
-		
+    public @ResponseBody ResponseEntity dodajOblast(@RequestBody List<FormMultiple> dto, @PathVariable String taskId) {
+		HashMap<String, Object> map = this.mapListToDtoMultiple(dto);
+        System.out.println("MAP " + map);
+
 		    // list all running/unsuspended instances of the process
 //		    ProcessInstance processInstance =
 //		        runtimeService.createProcessInstanceQuery()
@@ -179,7 +184,7 @@ public class CasopisController {
 		
 		
 		
-		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+			Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
 		String processInstanceId = task.getProcessInstanceId();
 		String ISSNbroj = (String) runtimeService.getVariable(processInstanceId, "ISSNbroj");
 				
@@ -187,28 +192,34 @@ public class CasopisController {
 				
 		System.out.println("KORISNIK: " + korisnik);
 		String nOblasti = "";
-		if(nOblasti==null)
-		{
-			korisnik.setnOblasti("");
-		}
+
 		
 		runtimeService.setVariable(processInstanceId, "oblast", dto);
 			
-			for(FormSubmissionDto d : dto)
-			{
-				if(Boolean.parseBoolean(d.getFieldValue()))
-				nOblasti +=',' + d.getFieldId();
-			}
-			
-			korisnik.setnOblasti(nOblasti);
-			
+			//for(FormSubmissionDto d : dto)
+			//{
+		
+		 for (Object value: (ArrayList) map.get("n_oblasti")){
+		        System.out.println("VALUE " + value.toString());
 
-		
-	
-		
+			 	nOblasti +=',' + value.toString();
+	        }
+
+			//}
+			
+			korisnik.setnOblasti(nOblasti);		
 		formService.submitTaskForm(taskId, map);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+	
+	private HashMap<String, Object> mapListToDtoMultiple(List<FormMultiple> dto) {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		for(FormMultiple temp : dto){
+			map.put(temp.getFieldId(), temp.getFieldValue());
+		}
+		
+		return map;
+	}
 	
 	@PostMapping(path = "/dodajUrednika/{taskId}", produces = "application/json")
     public @ResponseBody ResponseEntity dodajUrednika(@RequestBody List<FormSubmissionDto> dto, @PathVariable String taskId) {
@@ -237,11 +248,33 @@ public class CasopisController {
 			
 			for(FormSubmissionDto d : dto)
 			{
-				if(d.getFieldId().equals("prviUrednik"))
-					korisnik.setUrednik1(d.getFieldValue());
+				if(d.getFieldId().equals("prviUrednik")) {
+					
+					root.demo.model.User user = userRepository.findByUsername(d.getFieldValue());
+					if(user == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+					else
+					{
+						if(user.getRole().equals("urednik") && user.isAktiviran())
+						{
+							korisnik.setUrednik1(d.getFieldValue());
+						}else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+					}
+					
+				}
 				
-				if(d.getFieldId().equals("drugiUrednik"))
-					korisnik.setUrednik2(d.getFieldValue());
+				if(d.getFieldId().equals("drugiUrednik")) {
+					root.demo.model.User userr = userRepository.findByUsername(d.getFieldValue());
+					if(userr == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+					else
+					{
+						if(userr.getRole().equals("urednik") && userr.isAktiviran())
+						{
+							korisnik.setUrednik2(d.getFieldValue());
+						}else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+					}
+
+				}
 				
 				
 			}		
@@ -282,10 +315,30 @@ public class CasopisController {
 			for(FormSubmissionDto d : dto)
 			{
 				if(d.getFieldId().equals("prviRecenzent"))
-					korisnik.setRecenzent1(d.getFieldValue());
+				{
+					root.demo.model.User user = userRepository.findByUsername(d.getFieldValue());
+					if(user == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+					else
+					{
+						if(user.getRole().equals("recenzent") && user.isAktiviran())
+						{
+							korisnik.setRecenzent1(d.getFieldValue());
+						}else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+					}
+				}
 				
 				if(d.getFieldId().equals("drugiRecenzent"))
-					korisnik.setRecenzent2(d.getFieldValue());
+				{
+					root.demo.model.User userr = userRepository.findByUsername(d.getFieldValue());
+					if(userr == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+					else
+					{
+						if(userr.getRole().equals("recenzent") && userr.isAktiviran())
+						{
+							korisnik.setRecenzent2(d.getFieldValue());
+						}else return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+					}
+				}
 				
 				
 			}		

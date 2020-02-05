@@ -17,9 +17,9 @@ public class User {
     private String grad;
     private String drzava;
     private String titula;
-    @NotNull
+    @Column(unique=true, nullable = false)
     private String email;
-    @NotNull
+    @Column(unique=true, nullable = false)
     private String username;
     @NotNull
     private String password;
@@ -29,10 +29,14 @@ public class User {
     private boolean recenzent;
     
     private boolean aktiviran = false;
-
-   
-   	public User(Long id, String ime, String prezime, String grad, String drzava, String titula, @NotNull String email,
-			@NotNull String username, @NotNull String password, String nOblasti, boolean recenzent, boolean aktiviran) {
+    
+    private String role;
+    
+    
+   	  	
+	public User(Long id, String ime, String prezime, String grad, String drzava, String titula, @NotNull String email,
+			@NotNull String username, @NotNull String password, String nOblasti, boolean recenzent, boolean aktiviran,
+			String role) {
 		super();
 		this.id = id;
 		this.ime = ime;
@@ -46,9 +50,20 @@ public class User {
 		this.nOblasti = nOblasti;
 		this.recenzent = recenzent;
 		this.aktiviran = aktiviran;
+		this.role = role;
 	}
 
-   	  	
+
+	public String getRole() {
+		return role;
+	}
+
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+
 	public User() {
 		// TODO Auto-generated constructor stub
 	}
@@ -215,7 +230,8 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", ime=" + ime + ", prezime=" + prezime + ", grad=" + grad + ", drzava=" + drzava
 				+ ", titula=" + titula + ", email=" + email + ", username=" + username + ", password=" + password
-				+ ", nOblasti=" + nOblasti + ", recenzent=" + recenzent + ", aktiviran=" + aktiviran + "]";
+				+ ", nOblasti=" + nOblasti + ", recenzent=" + recenzent + ", aktiviran=" + aktiviran + ", role=" + role
+				+ "]";
 	}
 
 

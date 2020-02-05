@@ -68,6 +68,9 @@ public class TestService implements JavaDelegate{
 				korisnik.setRecenzent(Boolean.getBoolean(formField.getFieldValue()));
 			}
 	      }
+	      
+	      korisnik.setRole("guest");
+	      
 	      identityService.saveUser(user);
 	      userRepository.save(korisnik);
 	      

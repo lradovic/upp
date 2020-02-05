@@ -26,10 +26,25 @@ public class Casopis {
     
     private boolean aktiviran = false;
     
+    private String glavniUrednik;
+    
     public Casopis() {}
 
+ 
+	@Override
+	public String toString() {
+		return "Casopis [id=" + id + ", nazivMagazina=" + nazivMagazina + ", iSSNbroj=" + iSSNbroj + ", recenzent1="
+				+ recenzent1 + ", recenzent2=" + recenzent2 + ", urednik1=" + urednik1 + ", urednik2=" + urednik2
+				+ ", placanje=" + placanje + ", nOblasti=" + nOblasti + ", aktiviran=" + aktiviran + ", glavniUrednik="
+				+ glavniUrednik + "]";
+	}
+
+
+
+
 	public Casopis(Long id, String nazivMagazina, String iSSNbroj, String recenzent1, String recenzent2,
-			String urednik1, String urednik2, boolean placanje, String nOblasti, boolean aktiviran) {
+			String urednik1, String urednik2, boolean placanje, String nOblasti, boolean aktiviran,
+			String glavniUrednik) {
 		super();
 		this.id = id;
 		this.nazivMagazina = nazivMagazina;
@@ -41,19 +56,23 @@ public class Casopis {
 		this.placanje = placanje;
 		this.nOblasti = nOblasti;
 		this.aktiviran = aktiviran;
+		this.glavniUrednik = glavniUrednik;
 	}
 
 
 
 
-
-
-	@Override
-	public String toString() {
-		return "Casopis [id=" + id + ", nazivMagazina=" + nazivMagazina + ", ISSNbroj=" + iSSNbroj + ", recenzent1="
-				+ recenzent1 + ", recenzent2=" + recenzent2 + ", urednik1=" + urednik1 + ", urednik2=" + urednik2
-				+ ", placanje=" + placanje + ", nOblasti=" + nOblasti + ", aktiviran=" + aktiviran + "]";
+	public String getGlavniUrednik() {
+		return glavniUrednik;
 	}
+
+
+
+
+	public void setGlavniUrednik(String glavniUrednik) {
+		this.glavniUrednik = glavniUrednik;
+	}
+
 
 
 
