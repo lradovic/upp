@@ -1,9 +1,13 @@
 package root.demo.model;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -28,6 +32,9 @@ public class Casopis {
     
     private String glavniUrednik;
     
+    @OneToMany(mappedBy = "casopis")
+    private Set<Rad> radovi;
+    
     public Casopis() {}
 
  
@@ -42,9 +49,23 @@ public class Casopis {
 
 
 
+	
+
+
+
+	public Set<Rad> getRadovi() {
+		return radovi;
+	}
+
+
+	public void setRadovi(Set<Rad> radovi) {
+		this.radovi = radovi;
+	}
+
+
 	public Casopis(Long id, String nazivMagazina, String iSSNbroj, String recenzent1, String recenzent2,
 			String urednik1, String urednik2, boolean placanje, String nOblasti, boolean aktiviran,
-			String glavniUrednik) {
+			String glavniUrednik, Set<Rad> radovi) {
 		super();
 		this.id = id;
 		this.nazivMagazina = nazivMagazina;
@@ -57,9 +78,8 @@ public class Casopis {
 		this.nOblasti = nOblasti;
 		this.aktiviran = aktiviran;
 		this.glavniUrednik = glavniUrednik;
+		this.radovi = radovi;
 	}
-
-
 
 
 	public String getGlavniUrednik() {

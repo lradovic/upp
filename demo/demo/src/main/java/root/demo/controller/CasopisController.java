@@ -182,7 +182,7 @@ public class CasopisController {
 		
 //			Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list().get(0);
 		
-		
+
 		
 			Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
 		String processInstanceId = task.getProcessInstanceId();
@@ -193,7 +193,9 @@ public class CasopisController {
 		System.out.println("KORISNIK: " + korisnik);
 		String nOblasti = "";
 
+		String urednik = (String) runtimeService.getVariable(processInstanceId, "initiator");
 		
+
 		runtimeService.setVariable(processInstanceId, "oblast", dto);
 			
 			//for(FormSubmissionDto d : dto)
@@ -206,7 +208,7 @@ public class CasopisController {
 	        }
 
 			//}
-			
+			korisnik.setGlavniUrednik(urednik);
 			korisnik.setnOblasti(nOblasti);		
 		formService.submitTaskForm(taskId, map);
         return new ResponseEntity<>(HttpStatus.OK);
